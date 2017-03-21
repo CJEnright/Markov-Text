@@ -19,6 +19,7 @@ function importPAP() {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() { 
     if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+			console.log(xmlHttp.responseText);
     	markovExample.load(xmlHttp.responseText);
     	document.getElementById('textAreaInput').value = "Got and loaded Pride and Prejudice data, click Output button below for Pride and Prejudice output."
       outputFromModel();
