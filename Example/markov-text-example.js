@@ -24,6 +24,6 @@ function importPAP() {
       outputFromModel();
     }
   }
-  xmlHttp.open("GET", './markov-pride-prejudice.json', true);
+  xmlHttp.open("GET", 'https://raw.githubusercontent.com/CJEnright/Markov-Text/master/Example/markov-pride-prejudice.json', true);
   xmlHttp.send(null);
 }
