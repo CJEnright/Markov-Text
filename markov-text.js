@@ -112,7 +112,7 @@ MarkovText.prototype.reset = function() {
  * @param {Object} Words Words to load into the 
  */
 MarkovText.prototype.load = function(words) {
-	this.words = words	
+	this.words = words;
 }
 
 // Just some example data to mess around with

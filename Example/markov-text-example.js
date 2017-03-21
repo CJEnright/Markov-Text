@@ -11,7 +11,7 @@ function resetModel() {
 }
 
 function outputFromModel() {
-	var markovOutput =  markovExample.output(document.getElementById('numberOfWords').value);
+	var markovOutput = markovExample.output(document.getElementById('numberOfWords').value);
 	document.getElementById('textAreaOutput').value = markovOutput;
 }
 
@@ -19,12 +19,11 @@ function importPAP() {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() { 
     if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-			console.log(xmlHttp.responseText);
-    	markovExample.load(xmlHttp.responseText);
-    	document.getElementById('textAreaInput').value = "Got and loaded Pride and Prejudice data, click Output button below for Pride and Prejudice output."
+    	markovExample.load(JSON.parse(xmlHttp.responseText));
       outputFromModel();
+    	document.getElementById('textAreaInput').value = "Got and loaded Pride and Prejudice data, click Output button below for Pride and Prejudice output.";
     }
   }
-  xmlHttp.open("GET", 'https://raw.githubusercontent.com/CJEnright/Markov-Text/master/Example/markov-pride-prejudice.json', true);
+  xmlHttp.open("GET", './markov-pride-prejudice.json', true);
   xmlHttp.send(null);
 }
