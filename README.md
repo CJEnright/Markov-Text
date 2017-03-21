@@ -1,2 +1,2 @@
 # Markov-Text
-Javascript library for learning to generate text in a Markov model like way 
+Javascript library for generating text in a Markov model like way.
