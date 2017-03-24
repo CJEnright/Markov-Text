@@ -1,8 +1,16 @@
 /**
  * MarkovText object for generating text in a markov like way
+ * @param {Number} WordDepth Depth of each key
+ * @param {String} Text (Optional) Text to learn from
  */
-function MarkovText() {
+function MarkovText(wordDepth, text) {
+	// Essentially the n in n-gram
+	this.wordDepth = wordDepth || 2;
 	this.words = {};
+
+	if(text) {
+		this.learn(text);
+	}
 }
 
 /**
@@ -13,56 +21,62 @@ MarkovText.prototype.learn = function(text) {
 	// Break up the text into individual words by spaces
 	var newWords = text.split(" ");
 
-	for(var i=0; i<newWords.length - 1; i++) {
-		if(!this.words[newWords[i]]) {
-			this.words[newWords[i]] = {
+	for(var i=0; i<newWords.length - this.wordDepth; i++) {
+		var key = "";
+		for(var k=0; k<this.wordDepth-1; k++) {
+			key += newWords[i+k] + " ";
+		}
+
+		// Make sure a key with these word(s) exists
+		if(!this.words[key]) {
+			this.words[key] = {
 				__max: 0
 			}
 		}
 
-		if(!this.words[newWords[i]][newWords[i+1]]) {
-			this.words[newWords[i]][newWords[i+1]] = 1;
+		// See if there's an object with this key followed by the next word
+		if(!this.words[key][newWords[i+this.wordDepth-1]]) {
+			
+			this.words[key][newWords[i+this.wordDepth-1]] = {
+				__index: this.words[key].__max,
+				__occurrences: 1 // max index is index + occurrences
+			}
 		}
 		else {
-			this.words[newWords[i]][newWords[i+1]]++;	
+			this.words[key][newWords[i+this.wordDepth-1]].__occurrences++;	
 		}
 
-		// Shift all values up by one
-		for(var prop in this.words[newWords[i]]) {
-			if(this.words[newWords[i]][prop] >= this.words[newWords[i]][newWords[i+1]] && prop !== newWords[i+1]) {
-				this.words[newWords[i]][prop]++;
+		// Shift all __max values above this up by one (unless it is this)
+		for(var prop in this.words[key]) {
+			if(this.words[key][prop].__index >= this.words[key][newWords[i+this.wordDepth-1]].__index && prop !== newWords[i+this.wordDepth-1]) {
+				this.words[key][prop].__index++;
 			}
 		}
 
-		this.words[newWords[i]].__max++;
+		this.words[key].__max++;
 	}
 }
 
 /**
  * Produce a string of a given length given what the model knows
  * @param {Number} SentenceLength Length of sentence to produce in words
- * @return {String} 
+ * @return {String} Sentence Generated sentence
  */
-MarkovText.prototype.output = function(numberOfWords) {
-	// Start with a random word
-	var previousWord = this.randomRootWord();
-	var outputString = previousWord + " ";
+MarkovText.prototype.output = function(SentenceLength) {
+	var key = this.randomRootWord();
+	var generatedWords = key.split(" ");
+	var outputString = generatedWords.join(" ");
 
-	for(var i=0; i<numberOfWords; i++) {
-		var newWord;
+	for(var i=0; i<SentenceLength; i++) {
+		var newWord = this.findByIndex(this.randomFromZero(this.words[key].__max), this.words[key]);
+		var key = generatedWords.splice(1, this.wordDepth-1);
+		key.pop(); // Last element is always blank, pop it for easiness
+		key.push(newWord);
+		key = key.join(" ") + " ";
 
-		if(typeof this.words[previousWord] === "object") {
-			var newWordIndex = this.randomFromZero(Object.keys(this.words[previousWord]).length);
-			newWord = this.findByIndex(newWordIndex, this.words[previousWord]);
-		}
-		// If we couldn't get a child word (as in this word doesn't have one) find a new root word
-		if(this.newWord === undefined) {
-			newWord = this.randomRootWord();
-		}
+		var generatedWords = key.split(" ");
 
-		
 		outputString += newWord + " ";
-		previousWord = newWord;
 	}
 
 	return outputString;
@@ -93,8 +107,10 @@ MarkovText.prototype.randomFromZero = function(max) {
  */
 MarkovText.prototype.findByIndex = function(index, object) {
 	for(var prop in object || this.words) {
-		if(object[prop] <= index && prop !== "__max") {
-			// Return the word (aka the prop)
+		if(object[prop].__index <= index && 
+			 object[prop].__index + object[prop].__occurrences > index && 
+			 prop !== "__max") {
+			// Return the word
 			return prop;
 		}
 	}

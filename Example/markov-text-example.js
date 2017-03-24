@@ -1,4 +1,4 @@
-var markovExample = new MarkovText();
+var markovExample = new MarkovText(3);
 
 function learnFromInput() {
 	markovExample.learn(document.getElementById('textAreaInput').value);
