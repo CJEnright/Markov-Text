@@ -14,7 +14,7 @@ Mostly because sites like [watchout4snakes](http://watchout4snakes.com/) are coo
 Of Note
 ------
  * The Pride and Prejudice set uses a word depth of 3, and has all punctuation removed.
- * You can make output more realistic by keeping punctuation when learnign, and generating words until you reach one that ends with . ? or !
+ * You can make output more realistic by keeping punctuation when learning, and generating words until you reach one that ends with . ? or !
  * Using a word depth of 2 is good for small text, 3 for large, and anything beyond that needs a massive amount of text to output text that's not just the training data.
 
 Sample Code
