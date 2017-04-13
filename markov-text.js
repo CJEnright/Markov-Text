@@ -30,7 +30,7 @@ MarkovText.prototype.learn = function(text) {
 		// Make sure a key with these word(s) exists
 		if(!this.words[key]) {
 			this.words[key] = {
-				__max: 0
+				__m: 0
 			}
 		}
 
@@ -38,22 +38,22 @@ MarkovText.prototype.learn = function(text) {
 		if(!this.words[key][newWords[i+this.wordDepth-1]]) {
 			
 			this.words[key][newWords[i+this.wordDepth-1]] = {
-				__index: this.words[key].__max,
-				__occurrences: 1 // max index is index + occurrences
+				__i: this.words[key].__m,
+				__o: 1 // max index is index + occurrences
 			}
 		}
 		else {
-			this.words[key][newWords[i+this.wordDepth-1]].__occurrences++;	
+			this.words[key][newWords[i+this.wordDepth-1]].__o++;	
 		}
 
-		// Shift all __max values above this up by one (unless it is this)
+		// Shift all __m values above this up by one (unless it is this)
 		for(var prop in this.words[key]) {
-			if(this.words[key][prop].__index >= this.words[key][newWords[i+this.wordDepth-1]].__index && prop !== newWords[i+this.wordDepth-1]) {
-				this.words[key][prop].__index++;
+			if(this.words[key][prop].__i >= this.words[key][newWords[i+this.wordDepth-1]].__i && prop !== newWords[i+this.wordDepth-1]) {
+				this.words[key][prop].__i++;
 			}
 		}
 
-		this.words[key].__max++;
+		this.words[key].__m++;
 	}
 }
 
@@ -68,7 +68,7 @@ MarkovText.prototype.output = function(SentenceLength) {
 	var outputString = generatedWords.join(" ");
 
 	for(var i=0; i<SentenceLength; i++) {
-		var newWord = this.findByIndex(this.randomFromZero(this.words[key].__max), this.words[key]);
+		var newWord = this.findByIndex(this.randomFromZero(this.words[key].__m), this.words[key]);
 		var key = generatedWords.splice(1, this.wordDepth-1);
 		key.pop(); // Last element is always blank, pop it for easiness
 		key.push(newWord);
@@ -107,9 +107,9 @@ MarkovText.prototype.randomFromZero = function(max) {
  */
 MarkovText.prototype.findByIndex = function(index, object) {
 	for(var prop in object || this.words) {
-		if(object[prop].__index <= index && 
-			 object[prop].__index + object[prop].__occurrences > index && 
-			 prop !== "__max") {
+		if(object[prop].__i <= index && 
+			 object[prop].__i + object[prop].__o > index && 
+			 prop !== "__m") {
 			// Return the word
 			return prop;
 		}
